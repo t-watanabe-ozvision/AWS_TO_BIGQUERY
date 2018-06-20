@@ -1,0 +1,24 @@
+timezone: Asia/Tokyo
+### timezone: UTC
+
++disp_current_date:
+  echo>: ${moment(session_time).utc().format('YYYY-MM-DD HH:mm:ss Z')}
+
+_export:
+   host: 'hapitas-dev-read2-dexter.c35axue8xp8f.ap-northeast-1.rds.amazonaws.com'
+   user: 'show_only'
+   password: 'dorubakodorubako'
+   database: 'hapitas'
+   project_id: 'ozv-rd'
+   dataset: 'analytics_data_row'
+
+
+# 最初に1回、全データをAWSからBigQueryにデータコピーする。
++step1_init:
+    for_each>:
+      table: [
+        bank_info
+#        , test_table2
+      ]
+    _do:
+      embulk>: mysql_to_bigquery.yml

@@ -1,0 +1,40 @@
+timezone: Asia/Tokyo
+### timezone: UTC
+
+schedule:
+  daily>: 5:00:00
+#   minutes_interval>: 5
+
+
++disp_current_date:
+  echo>: ${moment(session_time).utc().format('YYYY-MM-DD HH:mm:ss Z')}
+
+_export:
+   host: 'hapitas-dev-read2-dexter.c35axue8xp8f.ap-northeast-1.rds.amazonaws.com'
+   user: 'show_only'
+   password: 'dorubakodorubako'
+   database: 'hapitas'
+   project_id: 'ozv-rd'
+   dataset: 'analytics_data_row'
+
+
+# テーブルのカラムに登録日、更新日ありの場合は、こちらに登録
++step1_update:
+    for_each>:
+      table: [
+        bank_info
+#        , test_table2
+      ]
+    _do:
+      embulk>: mysql_to_bigquery_update.yml
+
+
+# テーブルのカラムが登録日のみの場合は、こちらに登録
++step2_register_date_only:
+    for_each>:
+      table: [
+#        bank_info
+#        , test_table2
+      ]
+    _do:
+      embulk>: mysql_to_bigquery_insert.yml
